@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://youtube-transcribe.com
+
+# Sitemaps
+Sitemap: https://youtube-transcribe.com/sitemap.xml

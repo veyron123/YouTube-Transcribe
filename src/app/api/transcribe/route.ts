@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
     await ytDlpWrap.exec(args)
       .on('ytDlpEvent', (eventType: string, eventData: string) => console.log(`[yt-dlp-wrap] ${eventType}:`, eventData))
       .on('error', (error: Error) => console.error('[yt-dlp-wrap] error:', error))
-      .on('close', (code: number) => console.log('[yt-dlp-wrap] exited with code', code));
+      .on('close', (code: number | null) => console.log('[yt-dlp-wrap] exited with code', code));
     console.log('[TRANSCRIBE_LOG] yt-dlp execution finished. Waiting for file...');
 
     await waitForFile(outputPath);

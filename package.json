@@ -7,8 +7,7 @@
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "next-sitemap",
-    "postinstall": "npm install -g yt-dlp"
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -25,7 +24,8 @@
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
     "react-youtube": "^10.1.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "yt-dlp-wrap": "^2.3.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

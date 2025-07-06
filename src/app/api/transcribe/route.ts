@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 // import { anonymousRateLimiter } from "@/lib/rate-limiter"; // Временно отключено для локальной разработки
-import { execFile } from 'child_process';
+import YTDlpWrap from 'yt-dlp-wrap';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -106,21 +106,11 @@ export async function POST(req: NextRequest) {
       url
     ];
 
-    console.log(`[TRANSCRIBE_LOG] Executing yt-dlp with args: ${args.join(' ')}`);
-    const execution = () => new Promise((resolve, reject) => {
-      execFile('yt-dlp', args, (error: Error | null, stdout: string, stderr: string) => {
-        console.log('[TRANSCRIBE_LOG] yt-dlp stdout:', stdout);
-        console.error('[TRANSCRIBE_LOG] yt-dlp stderr:', stderr);
-        if (error) {
-          console.error('[TRANSCRIBE_LOG] yt-dlp execution error:', error);
-          return reject(new Error(`Error executing yt-dlp: ${stderr || error.message}`));
-        }
-        resolve(stdout);
-      });
-    });
-
-    console.log('[TRANSCRIBE_LOG] Starting yt-dlp execution...');
-    await execution();
+    const ytDlpWrap = new YTDlpWrap();
+    await ytDlpWrap.exec(args)
+      .on('ytDlpEvent', (eventType: string, eventData: string) => console.log(`[yt-dlp-wrap] ${eventType}:`, eventData))
+      .on('error', (error: Error) => console.error('[yt-dlp-wrap] error:', error))
+      .on('close', (code: number) => console.log('[yt-dlp-wrap] exited with code', code));
     console.log('[TRANSCRIBE_LOG] yt-dlp execution finished. Waiting for file...');
 
     await waitForFile(outputPath);

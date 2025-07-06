@@ -1,0 +1,11 @@
+{
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@vercel/next",
+      "config": {
+        "buildCommand": "npm install -g yt-dlp && npm run build"
+      }
+    }
+  ]
+}

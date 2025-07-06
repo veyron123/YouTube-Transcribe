@@ -7,7 +7,8 @@
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "postinstall": "npm install -g yt-dlp"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

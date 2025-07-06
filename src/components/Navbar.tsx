@@ -1,13 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
 
   return (
     <nav className="bg-gray-800 text-white p-4 sticky top-0 z-50">
@@ -40,13 +44,6 @@ const Navbar = () => {
         >
           <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
             <div>
-              {/* Placeholder for Language Selector */}
-              <select className="bg-gray-700 text-white rounded p-2 w-full">
-                <option>English</option>
-                <option>Русский</option>
-              </select>
-            </div>
-            <div>
               {session ? (
                 <div className="flex items-center space-x-4">
                   <Image
@@ -68,7 +65,7 @@ const Navbar = () => {
                   onClick={() => signIn('google')}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
                 >
-                  Login with Google
+                  Login
                 </button>
               )}
             </div>

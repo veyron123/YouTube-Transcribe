@@ -2,29 +2,6 @@
 
 import { useState } from 'react';
 
-const faqItems = [
-  {
-    question: 'Как это работает?',
-    answer:
-      'Наш сервис использует передовые технологии распознавания речи для транскрибации аудио из YouTube видео. Просто вставьте ссылку, и мы сделаем все остальное.',
-  },
-  {
-    question: 'Какие языки поддерживаются?',
-    answer:
-      'В настоящее время мы поддерживаем более 50 языков, включая английский, испанский, русский, китайский и многие другие. Мы постоянно работаем над расширением этого списка.',
-  },
-  {
-    question: 'Это бесплатно?',
-    answer:
-      'Да, у нас есть бесплатный тариф с базовыми функциями. Для более продвинутых возможностей, таких как экспорт в разные форматы и отсутствие ограничений, мы предлагаем премиум-подписку.',
-  },
-  {
-    question: 'Насколько точна транскрибация?',
-    answer:
-      'Точность зависит от качества звука в видео. Для видео с чистым звуком и без фонового шума точность может достигать 98-99%.',
-  },
-];
-
 interface AccordionItemProps {
   question: string;
   answer: string;
@@ -75,6 +52,13 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: AccordionItemProps
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  
+  const faqItems = [
+    { question: "What is YouTube Transcribe?", answer: "It's a tool to convert YouTube videos to text." },
+    { question: "Is it free?", answer: "Yes, it's free for basic use." },
+    { question: "How accurate is the transcription?", answer: "It's highly accurate, but not perfect." },
+    { question: "Can I download the transcription?", answer: "Yes, you can download it as a text file." },
+  ];
 
   const handleClick = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -83,7 +67,7 @@ const FAQ = () => {
   return (
     <section className="py-12 sm:py-16 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Часто задаваемые вопросы</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
         <div className="max-w-3xl mx-auto">
           {faqItems.map((item, index) => (
             <AccordionItem

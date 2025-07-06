@@ -69,7 +69,7 @@ const TranscriptionOutput = () => {
           </p>
         ) : (
           <p className="text-gray-500 text-center leading-relaxed">
-            Ваша транскрипция появится здесь...
+            Your transcription will appear here...
           </p>
         )}
       </div>

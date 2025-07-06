@@ -2,10 +2,10 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-// import {
-//   anonymousRateLimiter,
-//   authenticatedRateLimiter,
-// } from "@/lib/rate-limiter";
+import {
+  anonymousRateLimiter,
+  authenticatedRateLimiter,
+} from "@/lib/rate-limiter";
 
 const WHITELISTED_IP = "192.168.1.111";
 
@@ -22,32 +22,31 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
   const session = await getServerSession(authOptions);
 
-  // Rate limiting temporarily disabled for testing purposes
-  // // Если IP в белом списке, пропускаем проверку
-  // if (ip !== WHITELISTED_IP) {
-  //   if (session?.user) {
-  //     // @ts-ignore
-  //     const userId = session.user.id;
-  //     const { success, remaining } = await authenticatedRateLimiter.limit(userId);
-  //     if (!success) {
-  //       return NextResponse.json(
-  //         { error: "Too many requests. Please try again later." },
-  //         { status: 429 }
-  //       );
-  //     }
-  //   } else {
-  //     const { success, remaining } = await anonymousRateLimiter.limit(ip);
-  //     if (!success) {
-  //       return NextResponse.json(
-  //         {
-  //           error:
-  //             "You have reached your request limit. Please sign in to continue.",
-  //         },
-  //         { status: 429 }
-  //       );
-  //     }
-  //   }
-  // }
+  // Если IP в белом списке, пропускаем проверку
+  if (ip !== WHITELISTED_IP) {
+    if (session?.user) {
+      // @ts-ignore
+      const userId = session.user.id;
+      const { success, remaining } = await authenticatedRateLimiter.limit(userId);
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many requests. Please try again later." },
+          { status: 429 }
+        );
+      }
+    } else {
+      const { success, remaining } = await anonymousRateLimiter.limit(ip);
+      if (!success) {
+        return NextResponse.json(
+          {
+            error:
+              "You have reached your request limit. Please sign in to continue.",
+          },
+          { status: 429 }
+        );
+      }
+    }
+  }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {

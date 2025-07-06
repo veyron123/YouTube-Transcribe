@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -10,6 +8,11 @@ import { useTranscription } from '@/context/TranscriptionContext';
 const YTInput = () => {
   const [url, setUrl] = useState('');
   const [lang, setLang] = useState('en');
+
+  // Set default language on mount
+  useState(() => {
+    setLang('en');
+  });
   const { getTranscript, isLoading, error } = useTranscription();
 
   const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
@@ -24,7 +27,7 @@ const YTInput = () => {
 
   const handleButtonClick = () => {
     if (!isValidUrl) {
-      toast.error('Пожалуйста, введите корректную ссылку на YouTube.');
+      toast.error('Please enter a valid YouTube URL.');
     }
   };
 
@@ -42,7 +45,7 @@ const YTInput = () => {
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Введите URL-адрес видео на YouTube"
+                placeholder="Enter YouTube video URL"
                 aria-label="YouTube URL"
                 className="w-full px-4 py-3 text-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-shadow"
               />
@@ -56,15 +59,14 @@ const YTInput = () => {
                   id="language-select"
                   value={lang}
                   onChange={(e) => setLang(e.target.value)}
-                  className="appearance-none w-full pl-4 pr-10 py-3 text-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-shadow"
+                  className="appearance-none w-32 pl-4 pr-10 py-3 text-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-shadow text-black dark:text-white"
                   aria-label="Select language"
                 >
-                  <option value="en">English</option>
-                  <option value="es">Spanish</option>
-                  <option value="fr">French</option>
-                  <option value="de">German</option>
-                  <option value="ru">Русский</option>
-                  <option value="uk">Українська</option>
+                  <option className="text-black" value="en">English</option>
+                  <option className="text-black" value="ru">Русский</option>
+                  <option className="text-black" value="de">Deutsch</option>
+                  <option className="text-black" value="es">Español</option>
+                  <option className="text-black" value="fr">Français</option>
                 </select>
               </div>
               <button

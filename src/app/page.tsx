@@ -25,10 +25,10 @@ export default function Home() {
     <main role="main" className="flex min-h-screen flex-col items-center justify-between">
       <section id="hero" className="flex flex-col items-center text-center py-12 sm:py-20 px-4">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-          Мгновенная транскрибация видео с YouTube
+          Instant YouTube Video Transcription
         </h1>
         <p className="text-lg sm:text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl">
-          Легко превращайте любое видео с YouTube в текст. Копируйте и скачивайте готовую транскрипцию в один клик.
+          Easily convert any YouTube video to text. Copy and download ready transcriptions in one click.
         </p>
         <YTInput />
         <div id="transcription-section" className="w-full max-w-7xl grid lg:grid-cols-2 gap-8 mt-8">

@@ -19,7 +19,7 @@ const LiveDemo = () => {
 
   return (
     <section className="w-full max-w-4xl mx-auto px-4 py-12">
-      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Интерактивное демо</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Interactive Demo</h2>
       <div className="rounded-lg overflow-hidden shadow-2xl">
         <YouTubePlayer
           videoId={videoId}
@@ -40,7 +40,7 @@ const LiveDemo = () => {
           aria-controls="transcript-panel"
           className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
         >
-          {isTranscriptVisible ? 'Скрыть транскрипт' : 'Посмотреть транскрипт'}
+          {isTranscriptVisible ? 'Hide Transcript' : 'View Transcript'}
         </button>
       </div>
       <div

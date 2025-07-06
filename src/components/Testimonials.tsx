@@ -7,37 +7,37 @@ import 'keen-slider/keen-slider.min.css';
 const testimonials = [
   {
     avatar: 'https://i.pravatar.cc/150?img=1',
-    name: 'Анна',
-    role: 'Маркетолог',
-    text: 'Этот инструмент сэкономил мне часы работы! Теперь я могу быстро получать текстовые версии видео для анализа и создания контента.',
+    name: 'Anna',
+    role: 'Marketer',
+    text: 'This tool saved me hours of work! Now I can quickly get text versions of videos for analysis and content creation.',
     rating: 5,
   },
   {
     avatar: 'https://i.pravatar.cc/150?img=2',
-    name: 'Михаил',
-    role: 'Студент',
-    text: 'Идеально для учебы. Легко транскрибирую лекции и вебинары, чтобы потом вернуться к материалу в текстовом формате. Очень удобно!',
+    name: 'Michael',
+    role: 'Student',
+    text: 'Perfect for studying. I easily transcribe lectures and webinars to return to the material in text format later. Very convenient!',
     rating: 5,
   },
   {
     avatar: 'https://i.pravatar.cc/150?img=3',
-    name: 'Елена',
-    role: 'Журналист',
-    text: 'Точность транскрибации на высоте. Использую для расшифровки интервью, и результат превосходит все ожидания. Рекомендую!',
+    name: 'Elena',
+    role: 'Journalist',
+    text: 'The transcription accuracy is excellent. I use it for transcribing interviews, and the result exceeds all expectations. Highly recommend!',
     rating: 4,
   },
   {
     avatar: 'https://i.pravatar.cc/150?img=4',
-    name: 'Иван',
-    role: 'Разработчик',
-    text: 'Простой и понятный интерфейс, ничего лишнего. Вставил ссылку — получил текст. То, что нужно для быстрых задач.',
+    name: 'Ivan',
+    role: 'Developer',
+    text: 'Simple and clear interface, nothing unnecessary. Pasted the link — got the text. Exactly what you need for quick tasks.',
     rating: 5,
   },
   {
     avatar: 'https://i.pravatar.cc/150?img=5',
-    name: 'Ольга',
-    role: 'Контент-менеджер',
-    text: 'Отличный помощник в создании субтитров и описаний для видео. Работает быстро и без сбоев. Качество на высоте!',
+    name: 'Olga',
+    role: 'Content Manager',
+    text: 'Excellent assistant for creating subtitles and video descriptions. Works fast and without glitches. Quality is top-notch!',
     rating: 5,
   },
 ];
@@ -101,7 +101,7 @@ const Testimonials = () => {
     <section className="py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          Что говорят наши пользователи
+          What Our Users Say
         </h2>
         <div ref={sliderRef} className="keen-slider mt-12">
           {testimonials.map((testimonial, index) => (
@@ -114,7 +114,7 @@ const Testimonials = () => {
                   <img
                     className="h-12 w-12 rounded-full object-cover"
                     src={testimonial.avatar}
-                    alt={`Аватар пользователя ${testimonial.name}`}
+                    alt={`${testimonial.name}'s avatar`}
                   />
                   <div className="ml-4">
                     <p className="font-semibold text-gray-900">
@@ -145,7 +145,7 @@ const Testimonials = () => {
             }}
             className="px-8 py-3 text-white font-semibold rounded-md bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:scale-105 transition-transform"
           >
-            Посмотреть транскрипт
+            View Transcript
           </button>
         </div>
       </div>

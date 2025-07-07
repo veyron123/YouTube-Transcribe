@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 // import { anonymousRateLimiter } from "@/lib/rate-limiter"; // Временно отключено для локальной разработки
+import { execFile } from 'child_process';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 interface TranscriptEntry {
   timestamp: string;
@@ -30,10 +34,40 @@ function cleanVtt(vttContent: string): TranscriptEntry[] {
   return [{ timestamp: '', text: cleanedText }];
 }
 
+async function waitForFile(filePath: string, retries = 5, delay = 300): Promise<void> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await fs.access(filePath);
+      return;
+    } catch (error) {
+      if (i === retries - 1) {
+        throw new Error(`File not found after ${retries} retries: ${filePath}`);
+      }
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
 export async function POST(req: NextRequest) {
   console.log('[TRANSCRIBE_LOG] === NEW REQUEST STARTED ===');
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
   console.log('[TRANSCRIBE_LOG] Request IP:', ip);
+  
+  // Временно отключаем rate limiter для локальной разработки
+  if (process.env.NODE_ENV === 'production') {
+    // В продакшене нужно будет настроить переменные окружения для Redis
+    console.log('[TRANSCRIBE_LOG] Rate limiting disabled in development mode');
+    // const { success } = await anonymousRateLimiter.limit(ip);
+    // if (!success) {
+    //   console.log('[TRANSCRIBE_LOG] Rate limit exceeded for IP:', ip);
+    //   return NextResponse.json(
+    //     { error: "Too many requests. Please try again later." },
+    //     { status: 429 }
+    //   );
+    // }
+  } else {
+    console.log('[TRANSCRIBE_LOG] Rate limiting disabled in development mode');
+  }
 
   let lang: string = 'en';
   try {
@@ -48,33 +82,83 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
+    // Basic YouTube URL validation
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
     if (!youtubeRegex.test(url)) {
       console.log('[TRANSCRIBE_LOG] ERROR: Invalid YouTube URL:', url);
       return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
     }
 
-    const videoId = new URL(url).searchParams.get('v');
-    if (!videoId) {
-      return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
-    }
+    const videoId = uuidv4();
+    const outputDir = '/tmp';
+    const outputTemplate = path.join(outputDir, videoId);
+    const outputPath = `${outputTemplate}.${lang}.vtt`;
+    console.log('[TRANSCRIBE_LOG] Generated paths:', { videoId, outputDir, outputPath });
 
-    const savesubsUrl = `https://savesubs.com/action/get_subtitle?video_id=${videoId}&language=${lang}&service=youtube`;
-    const response = await fetch(savesubsUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch subtitles from savesubs.com: ${response.statusText}`);
-    }
-    const vttContent = await response.text();
+    console.log('[TRANSCRIBE_LOG] Creating output directory...');
+    await fs.mkdir(outputDir, { recursive: true });
 
+    const args = [
+      '--write-auto-sub',
+      '--sub-lang', lang,
+      '--skip-download',
+      '-o', `${outputTemplate}.%(ext)s`,
+      url
+    ];
+
+    const execution = () => new Promise((resolve, reject) => {
+      execFile('yt-dlp', args, (error: Error | null, stdout: string, stderr: string) => {
+        console.log('[TRANSCRIBE_LOG] yt-dlp stdout:', stdout);
+        console.error('[TRANSCRIBE_LOG] yt-dlp stderr:', stderr);
+        if (error) {
+          console.error('[TRANSCRIBE_LOG] yt-dlp execution error:', error);
+          return reject(new Error(`Error executing yt-dlp: ${stderr || error.message}`));
+        }
+        resolve(stdout);
+      });
+    });
+
+    await execution();
+    console.log('[TRANSCRIBE_LOG] yt-dlp execution finished. Waiting for file...');
+
+    await waitForFile(outputPath);
+    console.log(`[TRANSCRIBE_LOG] File found: ${outputPath}. Reading content...`);
+
+    const vttContent = await fs.readFile(outputPath, 'utf-8');
+    console.log('[TRANSCRIBE_LOG] VTT content length:', vttContent.length);
+    console.log('[TRANSCRIBE_LOG] VTT content preview:', vttContent.substring(0, 200));
+    
+    console.log('[TRANSCRIBE_LOG] Cleaning up file...');
+    await fs.unlink(outputPath);
+
+    console.log('[TRANSCRIBE_LOG] Processing VTT content...');
     const transcriptEntries = cleanVtt(vttContent);
+    console.log('[TRANSCRIBE_LOG] Parsed transcript entries:', transcriptEntries.length);
     const fullText = transcriptEntries.map(entry => entry.text).join(' ');
+    console.log('[TRANSCRIBE_LOG] Final transcript length:', fullText.length);
 
+    console.log('[TRANSCRIBE_LOG] === REQUEST COMPLETED SUCCESSFULLY ===');
     return NextResponse.json({ transcript: fullText });
 
   } catch (error) {
     console.error('[TRANSCRIBE_LOG] === ERROR OCCURRED ===');
     console.error('[TRANSCRIBE_LOG] Error details:', error);
+    console.error('[TRANSCRIBE_LOG] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    console.error('[TRANSCRIBE_LOG] Error message:', errorMessage);
+
+    if (errorMessage.includes('Unsupported URL')) {
+      console.log('[TRANSCRIBE_LOG] Returning unsupported URL error');
+      return NextResponse.json({ error: 'Неверный URL YouTube.' }, { status: 400 });
+    }
+
+    if (errorMessage.includes('subtitles not available')) {
+      console.log('[TRANSCRIBE_LOG] Returning no subtitles error');
+      return NextResponse.json({ error: `Для этого видео нет субтитров на выбранном языке (${lang}).` }, { status: 404 });
+    }
+
+    console.log('[TRANSCRIBE_LOG] Returning generic 500 error');
+    return NextResponse.json({ error: 'Не удалось обработать запрос.' }, { status: 500 });
   }
 }

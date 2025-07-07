@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 // import { anonymousRateLimiter } from "@/lib/rate-limiter"; // Временно отключено для локальной разработки
 import YTDlpWrap from 'yt-dlp-wrap';
+import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -103,6 +104,7 @@ export async function POST(req: NextRequest) {
       '--sub-lang', lang,
       '--skip-download',
       '-o', `${outputTemplate}.%(ext)s`,
+      '--ffmpeg-location', ffmpegPath,
       url
     ];
 

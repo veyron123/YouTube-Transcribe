@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     ];
 
     const execution = () => new Promise((resolve, reject) => {
-      execFile('yt-dlp', args, (error: Error | null, stdout: string, stderr: string) => {
+      execFile('/usr/local/bin/yt-dlp', args, (error: Error | null, stdout: string, stderr: string) => {
         console.log('[TRANSCRIBE_LOG] yt-dlp stdout:', stdout);
         console.error('[TRANSCRIBE_LOG] yt-dlp stderr:', stderr);
         if (error) {

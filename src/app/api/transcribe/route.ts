@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     }
 
     const videoId = uuidv4();
-    const outputDir = path.join(process.cwd(), 'tmp');
+    const outputDir = '/tmp';
     const outputTemplate = path.join(outputDir, videoId);
     const outputPath = `${outputTemplate}.${lang}.vtt`;
     console.log('[TRANSCRIBE_LOG] Generated paths:', { videoId, outputDir, outputPath });

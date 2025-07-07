@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { YoutubeTranscript } from 'youtube-transcript';
 
+function extractVideoId(url: string): string | null {
+  const regexes = [
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/,
+    /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^?]+)/,
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^?]+)/,
+  ];
+
+  for (const regex of regexes) {
+    const match = url.match(regex);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   console.log('[TRANSCRIBE_LOG] === NEW REQUEST STARTED ===');
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
@@ -19,13 +36,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-    if (!youtubeRegex.test(url)) {
-      console.log('[TRANSCRIBE_LOG] ERROR: Invalid YouTube URL:', url);
+    const videoId = extractVideoId(url);
+    if (!videoId) {
       return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
     }
 
-    const transcript = await YoutubeTranscript.fetchTranscript(url, {
+    const transcript = await YoutubeTranscript.fetchTranscript(videoId, {
       lang,
     });
 

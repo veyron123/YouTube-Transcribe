@@ -14,7 +14,6 @@
     "@headlessui/react": "^2.2.4",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.35.0",
-    "ffmpeg-static": "^5.2.0",
     "framer-motion": "^12.19.2",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.525.0",
@@ -26,7 +25,7 @@
     "react-hot-toast": "^2.5.2",
     "react-youtube": "^10.1.0",
     "uuid": "^11.1.0",
-    "yt-dlp-wrap": "^2.3.12"
+    "youtube-transcript": "^1.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -52,7 +52,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('[TRANSCRIBE_LOG] === ERROR OCCURRED ===');
     console.error('[TRANSCRIBE_LOG] Error details:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    let errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    if (errorMessage.includes('disabled on this video')) {
+      errorMessage = 'Transcript is disabled for this video by the author.';
+    }
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
